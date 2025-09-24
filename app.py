@@ -9,13 +9,25 @@ import tempfile
 
 st.title("Corn Pest Detection")
 
-# Upload image
-uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
+st.write("Choose an image source:")
+option = st.radio("Select input method", ("Upload Image", "Capture from Camera"))
 
-if uploaded_file is not None:
-	# Save uploaded file to a temp location
+image_data = None
+
+if option == "Upload Image":
+	uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
+	if uploaded_file is not None:
+		image_data = uploaded_file.read()
+
+elif option == "Capture from Camera":
+	camera_image = st.camera_input("Take a picture")
+	if camera_image is not None:
+		image_data = camera_image.getvalue()
+
+if image_data is not None:
+	# Save image data to a temp file
 	with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp_file:
-		tmp_file.write(uploaded_file.read())
+		tmp_file.write(image_data)
 		tmp_path = tmp_file.name
 
 	# Load model
